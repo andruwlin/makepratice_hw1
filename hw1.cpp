@@ -19,6 +19,7 @@ void selectAnSolution(map<string, int>&, map<string, int>&, map<string, vector< 
 void copySummary(map<string, int>&, map<string, int>&);
 void copyResult(map<string, int>&, map<string, int>&);
 void copyFinalResult(map<string, vector< vector<int> > >&, map<string, vector< vector<int> > >&);
+void changeMaterial(map<string, int>&, vector<int>&, map<string, int>&, map<string, vector< vector<int> > >&);
 int GRN(int* number, int small, int big, int iNum);
 int iMaterial[3] = {6000, 9000, 12000};
 int iCost = 0;
@@ -112,14 +113,14 @@ int main () {
     sTempLong << it->first;
     sTempLong >> iLong;
     iLong = std::stoi (it->first);
-    cout<<iLong<<endl;
+    //cout<<iLong<<endl;
     iTotal = iTotal + iLong * it->second;
     iTotalCnt = iTotalCnt + it->second;
-    cout << it->first << " => " << it->second << '\n';
+    //cout << it->first << " => " << it->second << '\n';
   }
-  cout<<'\n'<<endl;
-  cout<<"Total = "<<iTotal<<endl;
-  cout<<"TotalCnt = "<<iTotalCnt<<endl;
+  //cout<<'\n'<<endl;
+  //cout<<"Total = "<<iTotal<<endl;
+  //cout<<"TotalCnt = "<<iTotalCnt<<endl;
   
   
 
@@ -128,34 +129,46 @@ int main () {
   SA(mSummary, mResult, mFinalResult, mCopySummary, mCopyResult, mCopyFinalResult, vSummary);
 
   //vector<vector<int> > vTempVector = mFinalResult["6M"];
-  
+  std::ofstream outfile ("result.txt",std::ofstream::binary);
+  char* buffer = new char[10];
+
+
   vector<vector<int> > vTempFinalResultVector;
 
   for (map<string,vector<vector<int> > >::iterator it=mFinalResult.begin(); it!=mFinalResult.end(); ++it)
   {
 
       vTempFinalResultVector = it->second;
-      cout<<it->first<<endl;
+      if(it->second.size() != 0)
+      {
+	  outfile.write (it->first.c_str(), it->first.size());
+          cout<<it->first<<endl;
+      }
+
       for (int i=0; i<vTempFinalResultVector.size(); i++)
       {
           for (int j=0;j<vTempFinalResultVector[i].size();j++)
 	  {
               std::cout << ' ' << vTempFinalResultVector[i][j];
-
-	  cout<<"size:"<<vTempFinalResultVector[i].size()<<endl;
+	      outfile<<endl;
+              outfile<<vTempFinalResultVector[i][j];
 	  }
+    	  outfile<<endl;
 	  cout<<endl;
-
       }
-
-  cout<<endl;
+      outfile<<endl;
+      cout<<endl;
   }
-
+  outfile<<endl;
   cout<<endl;
 cout<<"6M = "<<mResult["6M"]<<endl;
+outfile<<"6M = "<<mResult["6M"]<<endl;
 cout<<"9M = "<<mResult["9M"]<<endl;
+outfile<<"9M = "<<mResult["9M"]<<endl;
 cout<<"12M = "<<mResult["12M"]<<endl;
+outfile<<"12M = "<<mResult["12M"]<<endl;
 cout<<"Cost = "<<mResult["Cost"]<<endl;
+outfile<<"Cost = "<<mResult["Cost"]<<endl;
 
 
   /*cout<<"Cost: "<<mResult["Cost"]<<endl;
@@ -177,7 +190,7 @@ void SA(map<string, int>& mSummary, map<string, int>& mResult, map<string, vecto
 	map<string, int>& mCopySummary, map<string, int>& mCopyResult, map<string, vector< vector<int> > >& mCopyFinalResult,
 	vector<string>& vSummary)
 {
-    double dTempurature = 10000;
+    double dTempurature = 100000;
     int n[50] = {};
     int iRanNum = GRN(n, 10, 59, 8);
     cout<<"gen a random num: "<<iRanNum<<endl;
@@ -188,14 +201,43 @@ void SA(map<string, int>& mSummary, map<string, int>& mResult, map<string, vecto
     
     copySummary(mSummary, mCopySummary);
     selectAnSolution(mCopySummary, mResult, mFinalResult, vSummary);
-    
+   
+  vector<vector<int> > vTempFinalResultVector;
+
+  /*for (map<string,vector<vector<int> > >::iterator it=mFinalResult.begin(); it!=mFinalResult.end(); ++it)
+  {
+
+      vTempFinalResultVector = it->second;
+      cout<<it->first<<endl;
+      for (int i=0; i<vTempFinalResultVector.size(); i++)
+      {
+          for (int j=0;j<vTempFinalResultVector[i].size();j++)
+	  {
+              std::cout << ' ' << vTempFinalResultVector[i][j];
+
+	  cout<<"size:"<<vTempFinalResultVector[i].size()<<endl;
+	  }
+	  cout<<endl;
+
+      }
+
+  cout<<endl;
+  }*/
+
+  //cout<<endl;
+/*cout<<"6M = "<<mResult["6M"]<<endl;
+cout<<"9M = "<<mResult["9M"]<<endl;
+cout<<"12M = "<<mResult["12M"]<<endl;
+cout<<"Cost = "<<mResult["Cost"]<<endl;*/
+
+
     //genInitialSolution(mSummary, mResult, mFinalResult); 
 
     //copyResult(mResult, mCopyResult);
     //copyFinalResult(mFinalResult, mCopyFinalResult);
-    while(dTempurature>100)
+    while(dTempurature>500)
     {
-	for(int i=0; i<20; i++)
+	for(int i=0; i<30; i++)
 	{
 	cout<<"Temp = "<<dTempurature<<endl;
     	    copySummary(mSummary, mCopySummary);
@@ -215,8 +257,8 @@ void SA(map<string, int>& mSummary, map<string, int>& mResult, map<string, vecto
 	    else
 	    {
 		double dRanNum = static_cast<double>( 1. * rand() * 100 / (RAND_MAX + 1.))/100;
-		cout<<dRanNum<<"  JDK"<<endl;
-		cout<<exp((mResult["Cost"] - mCopyResult["Cost"])/dTempurature)<<"   ilju"<<endl;
+		//cout<<dRanNum<<"  JDK"<<endl;
+		//cout<<exp((mResult["Cost"] - mCopyResult["Cost"])/dTempurature)<<"   ilju"<<endl;
 		if(dRanNum < exp((mResult["Cost"] - mCopyResult["Cost"])/dTempurature))
 		{
 		    copyResult(mCopyResult, mResult);
@@ -237,7 +279,7 @@ void SA(map<string, int>& mSummary, map<string, int>& mResult, map<string, vecto
 
 
 	}
-	dTempurature = dTempurature * 0.998;
+	dTempurature = dTempurature * 0.9988;
     }
     
 
@@ -246,6 +288,31 @@ void SA(map<string, int>& mSummary, map<string, int>& mResult, map<string, vecto
 	
     //return mResult;
 
+}
+
+void changeMaterial(map<string, int>& mSummary, vector<int>& vSummary, 
+	map<string, int>& mResult, map<string, vector< vector<int> > >& mFinalResult)
+{
+    int iVectorCost = 0;
+    vector<vector<int> > vTempFinalResultVector;
+
+    for (map<string,vector<vector<int> > >::iterator it=mFinalResult.begin(); it!=mFinalResult.end(); ++it)
+    {
+
+       vTempFinalResultVector = it->second;
+       cout<<it->first<<endl;
+       for (int i=0; i<vTempFinalResultVector.size(); i++)
+       {
+           for (int j=0;j<vTempFinalResultVector[i].size();j++)
+	   {
+               std::cout << ' ' << vTempFinalResultVector[i][j];
+
+	       cout<<"size:"<<vTempFinalResultVector[i].size()<<endl;
+	   }
+	   cout<<endl;
+       }
+       cout<<endl;
+   }
 }
 
 
@@ -362,13 +429,13 @@ void selectAnSolution(map<string, int>& mCopySummary, map<string, int>& mCopyRes
         mCopyResult["6M"]++;	
     else if(iRanNumM == 1)
 	mCopyResult["9M"]++;
-    else
+    else if(iRanNumM == 2)
 	mCopyResult["12M"]++;
 
 	iCost = iMaterial[iRanNumM];
 
 
-    while(iTempTotalCnt>0)
+    while(!vSummary.empty())
     {
 	
         iRanNum = static_cast<int>( 1. * rand() * vSummary.size() / (RAND_MAX + 1.));
@@ -406,7 +473,7 @@ void selectAnSolution(map<string, int>& mCopySummary, map<string, int>& mCopyRes
             	mCopyFinalResult["6M"].push_back(vTempVector);
 	    else if(iRanNumM == 1)
             	mCopyFinalResult["9M"].push_back(vTempVector);
-	    else
+	    else if(iRanNumM == 2)
             	mCopyFinalResult["12M"].push_back(vTempVector);
 	    vTempVector.clear();
 	    iRanNumM = static_cast<int>( 1. * rand() * 3 / (RAND_MAX + 1.));
@@ -414,8 +481,9 @@ void selectAnSolution(map<string, int>& mCopySummary, map<string, int>& mCopyRes
 		mCopyResult["6M"]++;	
 	    else if(iRanNumM == 1)
 		mCopyResult["9M"]++;
-    	    else
+    	    else if(iRanNumM == 2)
 		mCopyResult["12M"]++;
+
 
 	    iCost = iMaterial[iRanNumM];
 
@@ -427,6 +495,18 @@ void selectAnSolution(map<string, int>& mCopySummary, map<string, int>& mCopyRes
 	iTempTotalCnt--;
 
     }
+    //cout<<"last cost ======= "<<iCost<<endl;
+    //cout<<"last cost ======= "<<iRanNumM<<endl;
+
+    mCopyResult["Cost"] = mCopyResult["Cost"] + iCost;
+    if(iRanNumM == 0)
+	mCopyFinalResult["6M"].push_back(vTempVector);
+    else if(iRanNumM == 1)
+        mCopyFinalResult["9M"].push_back(vTempVector);
+    else if(iRanNumM == 2)
+	mCopyFinalResult["12M"].push_back(vTempVector);
+    vTempVector.clear();
+
   /*vector<vector<int> > vTempFinalResultVector;
   cout<<endl;
 for (map<string,vector<vector<int> > >::iterator it=mCopyFinalResult.begin(); it!=mCopyFinalResult.end(); ++it)
